@@ -9,7 +9,7 @@ using UnityEngine;
 public class RecordAnimation : MonoBehaviour
 {
 	public AnimationClip clip;
-	public List<BonesToRecord> bonesToRecord;
+	public BonesToRecord bonesToRecord;
 	
     private Animator m_Animator;
     private bool m_RecordingAnim, m_RecordingCsv;
@@ -29,72 +29,35 @@ public class RecordAnimation : MonoBehaviour
     [ContextMenu("Record all bones")]
     public void RecordAllBones()
     {
-	    BonesToRecord btn;
-	    bonesToRecord = new List<BonesToRecord>();
-	    for (var i = (int)HumanBodyBones.Hips; i < (int)HumanBodyBones.LastBone; i++)
+	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
-		    btn = new BonesToRecord()
-		    {
-			    name = ((HumanBodyBones)i).ToString(),
-			    humanBodyBone = (HumanBodyBones)i,
-			    toRecord = ToRecord.Keep
-		    };
-		    bonesToRecord.Add(btn);
+		    BonesToRecord.refBones[i] = true;
+		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
+	    
+	    bonesToRecord.SyncField();
     }
     
     [ContextMenu("Ignore all bones")]
     public void IgnoreAllBones()
     {
-	    BonesToRecord btn;
-	    bonesToRecord = new List<BonesToRecord>();
-	    for (var i = (int)HumanBodyBones.Hips; i < (int)HumanBodyBones.LastBone; i++)
+	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
-		    btn = new BonesToRecord()
-		    {
-			    name = ((HumanBodyBones)i).ToString(),
-			    humanBodyBone = (HumanBodyBones)i,
-			    toRecord = ToRecord.Ignore
-		    };
-		    bonesToRecord.Add(btn);
+		    BonesToRecord.refBones[i] = false;
+		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
+	    
+	    bonesToRecord.SyncField();
     }
-
-    [ContextMenu("Ignore all fingers")]
-    public void IgnoreAllFingers()
-    {
-	    BonesToRecord btn;
-	    bonesToRecord = new List<BonesToRecord>();
-	    for (var i = (int)HumanBodyBones.Hips; i < (int)HumanBodyBones.LastBone; i++)
-	    {
-		    if (i >= (int)HumanBodyBones.LeftThumbProximal && i <= (int)HumanBodyBones.RightLittleDistal)
-		    {
-			    btn = new BonesToRecord()
-			    {
-				    name = ((HumanBodyBones)i).ToString(),
-				    humanBodyBone = (HumanBodyBones)i,
-				    toRecord = ToRecord.Ignore
-			    };
-			    bonesToRecord.Add(btn);
-		    }
-		    else
-		    {
-			    btn = new BonesToRecord()
-			    {
-				    name = ((HumanBodyBones)i).ToString(),
-				    humanBodyBone = (HumanBodyBones)i,
-				    toRecord = ToRecord.Keep
-			    };
-			    bonesToRecord.Add(btn);
-		    }
-	    }
-    }
+    
+    
 
     // Start is called before the first frame update
 	void Start()
     {
 		m_Animator = GetComponent<Animator>();
 		m_PoseHandler = new HumanPoseHandler(m_Animator.avatar, this.transform);
+		bonesToRecord.SyncList();
     }
 	
 	private void LateUpdate()
@@ -119,6 +82,7 @@ public class RecordAnimation : MonoBehaviour
 	    if(m_RecordingCsv) return;
 
 	    Debug.Log("Start Recording");
+	    bonesToRecord.SyncList();
 	    m_RecordingCsv = true;
 		StartCoroutine(Recording());
     }
@@ -138,6 +102,7 @@ public class RecordAnimation : MonoBehaviour
 	    if(m_RecordingAnim) return;
 	    
 	    Debug.Log("Start Recording");
+	    bonesToRecord.SyncList();
 	    m_Vrik = GetComponent<VRIK>();
 	    m_RecordingAnim = true;
 	    m_Vrik.solver.OnPostUpdate += BuildDictOfMuscle;
@@ -214,14 +179,12 @@ public class RecordAnimation : MonoBehaviour
 		AddCurve("RightFootQ.z", m_Animator.GetBoneTransform(HumanBodyBones.RightFoot).transform.rotation.z);
 		AddCurve("RightFootQ.w", m_Animator.GetBoneTransform(HumanBodyBones.RightFoot).transform.rotation.w);
 
-		Debug.Log(HumanTrait.BoneCount);
 		for (var i = 0; i < HumanTrait.BoneCount; ++i)
 		{
 			
-			if(bonesToRecord[i].toRecord == ToRecord.Ignore)
+			if(!BonesToRecord.refBones[bonesToRecord.FromHumanBodyBones(i)]) 
 				continue;
 			
-			Debug.Log(HumanTrait.BoneName[i]);
 			try
 			{
 				var s = MuscleNameCheck(HumanTrait.MuscleName[HumanTrait.MuscleFromBone(i, 0)]);
@@ -291,8 +254,11 @@ public class RecordAnimation : MonoBehaviour
         {
             for (var i = (int)HumanBodyBones.Hips; i < (int)HumanBodyBones.LastBone; i++) 
             { 
+	            if(!BonesToRecord.refBones[bonesToRecord.FromHumanBodyBones(i)]) 
+		            continue;
+	            
                 var t = m_Animator.GetBoneTransform((HumanBodyBones)i);
-                if (bonesToRecord[i].toRecord == ToRecord.Ignore || t == null) 
+                if (t == null) 
                 {
 					m_TransformList.Add(0.0f); m_TransformList.Add(0.0f);
 					m_TransformList.Add(0.0f); m_TransformList.Add(0.0f);
@@ -324,6 +290,9 @@ public class RecordAnimation : MonoBehaviour
 
 		for (var i = (int)HumanBodyBones.Hips; i < (int)HumanBodyBones.LastBone; i++)
 		{
+			if(!BonesToRecord.refBones[bonesToRecord.FromHumanBodyBones(i)]) 
+				continue;
+			
 			m_Writer.Write((HumanBodyBones)i + "PosX, ");
 			m_Writer.Write((HumanBodyBones)i + "PosY, ");
 			m_Writer.Write((HumanBodyBones)i + "PosZ, ");
