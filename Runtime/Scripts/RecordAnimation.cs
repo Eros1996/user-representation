@@ -32,7 +32,6 @@ public class RecordAnimation : MonoBehaviour
 	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
 		    BonesToRecord.refBones[i] = true;
-		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
 	    
 	    bonesToRecord.SyncField();
@@ -44,7 +43,6 @@ public class RecordAnimation : MonoBehaviour
 	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
 		    BonesToRecord.refBones[i] = false;
-		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
 	    
 	    bonesToRecord.SyncField();
