@@ -7313,6 +7313,63 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4455438662752596672, guid: b0c78422845bac948a9080175e57ffff, type: 3}
   m_PrefabInstance: {fileID: 1253820531}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1275833285
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4944652857459037684, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_Name
+      value: XR Interaction Hands Setup
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630820991690574560, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ad2246ab45c41e74fad4a42a6c2aa984, type: 3}
 --- !u!1 &1304940958
 GameObject:
   m_ObjectHideFlags: 0
@@ -8474,7 +8531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4c6f86be00a4c4b976bc7e40145393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hmdType: 0
+  hmdType: 1
 --- !u!114 &1702048007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8489,171 +8546,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clip: {fileID: 7400000, guid: 671c281cdbbce9b4083a58757a4408cd, type: 2}
   bonesToRecord:
-  - name: Hips
-    m_ToRecord: 0
-    m_HumanBodyBone: 0
-  - name: LeftUpperLeg
-    m_ToRecord: 0
-    m_HumanBodyBone: 1
-  - name: RightUpperLeg
-    m_ToRecord: 0
-    m_HumanBodyBone: 2
-  - name: LeftLowerLeg
-    m_ToRecord: 0
-    m_HumanBodyBone: 3
-  - name: RightLowerLeg
-    m_ToRecord: 0
-    m_HumanBodyBone: 4
-  - name: LeftFoot
-    m_ToRecord: 0
-    m_HumanBodyBone: 5
-  - name: RightFoot
-    m_ToRecord: 0
-    m_HumanBodyBone: 6
-  - name: Spine
-    m_ToRecord: 0
-    m_HumanBodyBone: 7
-  - name: Chest
-    m_ToRecord: 0
-    m_HumanBodyBone: 8
-  - name: Neck
-    m_ToRecord: 0
-    m_HumanBodyBone: 9
-  - name: Head
-    m_ToRecord: 0
-    m_HumanBodyBone: 10
-  - name: LeftShoulder
-    m_ToRecord: 0
-    m_HumanBodyBone: 11
-  - name: RightShoulder
-    m_ToRecord: 0
-    m_HumanBodyBone: 12
-  - name: LeftUpperArm
-    m_ToRecord: 0
-    m_HumanBodyBone: 13
-  - name: RightUpperArm
-    m_ToRecord: 0
-    m_HumanBodyBone: 14
-  - name: LeftLowerArm
-    m_ToRecord: 0
-    m_HumanBodyBone: 15
-  - name: RightLowerArm
-    m_ToRecord: 0
-    m_HumanBodyBone: 16
-  - name: LeftHand
-    m_ToRecord: 0
-    m_HumanBodyBone: 17
-  - name: RightHand
-    m_ToRecord: 0
-    m_HumanBodyBone: 18
-  - name: LeftToes
-    m_ToRecord: 0
-    m_HumanBodyBone: 19
-  - name: RightToes
-    m_ToRecord: 0
-    m_HumanBodyBone: 20
-  - name: LeftEye
-    m_ToRecord: 0
-    m_HumanBodyBone: 21
-  - name: RightEye
-    m_ToRecord: 0
-    m_HumanBodyBone: 22
-  - name: Jaw
-    m_ToRecord: 0
-    m_HumanBodyBone: 23
-  - name: LeftThumbProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 24
-  - name: LeftThumbIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 25
-  - name: LeftThumbDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 26
-  - name: LeftIndexProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 27
-  - name: LeftIndexIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 28
-  - name: LeftIndexDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 29
-  - name: LeftMiddleProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 30
-  - name: LeftMiddleIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 31
-  - name: LeftMiddleDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 32
-  - name: LeftRingProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 33
-  - name: LeftRingIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 34
-  - name: LeftRingDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 35
-  - name: LeftLittleProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 36
-  - name: LeftLittleIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 37
-  - name: LeftLittleDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 38
-  - name: RightThumbProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 39
-  - name: RightThumbIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 40
-  - name: RightThumbDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 41
-  - name: RightIndexProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 42
-  - name: RightIndexIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 43
-  - name: RightIndexDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 44
-  - name: RightMiddleProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 45
-  - name: RightMiddleIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 46
-  - name: RightMiddleDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 47
-  - name: RightRingProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 48
-  - name: RightRingIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 49
-  - name: RightRingDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 50
-  - name: RightLittleProximal
-    m_ToRecord: 0
-    m_HumanBodyBone: 51
-  - name: RightLittleIntermediate
-    m_ToRecord: 0
-    m_HumanBodyBone: 52
-  - name: RightLittleDistal
-    m_ToRecord: 0
-    m_HumanBodyBone: 53
-  - name: UpperChest
-    m_ToRecord: 0
-    m_HumanBodyBone: 54
+    Hips: 0
+    LeftUpperLeg: 0
+    RightUpperLeg: 0
+    LeftLowerLeg: 0
+    RightLowerLeg: 0
+    LeftFoot: 0
+    RightFoot: 0
+    Spine: 0
+    Chest: 0
+    Neck: 0
+    Head: 0
+    LeftShoulder: 0
+    RightShoulder: 0
+    LeftUpperArm: 0
+    RightUpperArm: 0
+    LeftLowerArm: 0
+    RightLowerArm: 0
+    LeftHand: 0
+    RightHand: 0
+    LeftToes: 0
+    RightToes: 0
+    LeftEye: 0
+    RightEye: 0
+    Jaw: 0
+    LeftFingers: 0
+    RightFingers: 0
+    UpperChest: 0
 --- !u!1 &1707915549
 GameObject:
   m_ObjectHideFlags: 0
@@ -9424,63 +9343,6 @@ RectTransform:
   m_AnchoredPosition: {x: -0, y: -20}
   m_SizeDelta: {x: -300, y: -500}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1001 &1819116627
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4944652857459037684, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_Name
-      value: XR Interaction Hands Setup
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8630820991690574560, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: acbd34b1d7774724a95ae618f0ce9cb8, type: 3}
 --- !u!1 &1827744961
 GameObject:
   m_ObjectHideFlags: 0
@@ -11735,4 +11597,4 @@ SceneRoots:
   - {fileID: 101356426}
   - {fileID: 1048031954}
   - {fileID: 1702048005}
-  - {fileID: 1819116627}
+  - {fileID: 1275833285}
