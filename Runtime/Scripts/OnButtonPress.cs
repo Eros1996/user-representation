@@ -15,7 +15,8 @@ public class OnButtonPress : MonoBehaviour
 
     private void Awake()
     {
-        action = new InputAction();
+        if(action == null)
+            action = new InputAction();
     }
 
     private void OnDestroy()
