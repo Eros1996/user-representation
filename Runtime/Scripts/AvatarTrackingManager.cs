@@ -74,9 +74,10 @@ public class AvatarTrackingManager : MonoBehaviour
         {
             m_CalibrationController = gameObject.AddComponent<VRIKCalibrationController>();
             m_CalibrationController.settings = new VRIKCalibrator.Settings();
-            m_CalibrationController.ik = m_VRIK;
-            m_CalibrationController.headTracker = m_XRHead;
         }
+        
+        m_CalibrationController.ik = m_VRIK;
+        m_CalibrationController.headTracker = m_XRHead;
     }
     
     private void FindXRComponents()
@@ -128,17 +129,32 @@ public class AvatarTrackingManager : MonoBehaviour
         m_AvLeftHand = m_Animator.GetBoneTransform(HumanBodyBones.LeftHand).gameObject;
         m_AvRightHand = m_Animator.GetBoneTransform(HumanBodyBones.RightHand).gameObject;
         
+        
         m_FingersRetargetingL = m_AvLeftHand.GetComponent<FingersRetargeting>();
+        if (m_FingersRetargetingL == null)
+        {
+            m_FingersRetargetingL = SetupFingersRetargeting(m_FingersRetargetingL, m_AvLeftHand, false);
+        }
+        m_FingersRetargetingL.enabled = false;
+        
         m_FingersRetargetingR = m_AvRightHand.GetComponent<FingersRetargeting>();
+        if (m_FingersRetargetingR == null)
+        {
+            m_FingersRetargetingR = SetupFingersRetargeting(m_FingersRetargetingR, m_AvRightHand, true);
+        }
+        m_FingersRetargetingR.enabled = false;
 
-        m_FingersRetargetingL = SetupFingersRetargeting(m_FingersRetargetingL, m_AvLeftHand, false);
-        m_FingersRetargetingR = SetupFingersRetargeting(m_FingersRetargetingR, m_AvRightHand, true);
-        EnableFingerRetargeting(false);
+        
+        // m_FingersRetargetingL = m_AvLeftHand.GetComponent<FingersRetargeting>();
+        // m_FingersRetargetingR = m_AvRightHand.GetComponent<FingersRetargeting>();
+        // m_FingersRetargetingL = SetupFingersRetargeting(m_FingersRetargetingL, m_AvLeftHand, false);
+        // m_FingersRetargetingR = SetupFingersRetargeting(m_FingersRetargetingR, m_AvRightHand, true);
+        //EnableFingerRetargeting(false);
     }
 
     private FingersRetargeting SetupFingersRetargeting(FingersRetargeting fingersRetargeting, GameObject hand, bool isRight)
     {
-        if (fingersRetargeting != null) return fingersRetargeting;
+        //if (fingersRetargeting != null) return fingersRetargeting;
         
         fingersRetargeting = hand.AddComponent<FingersRetargeting>();
         fingersRetargeting.isRightHand = isRight;
@@ -157,7 +173,7 @@ public class AvatarTrackingManager : MonoBehaviour
             // Debug.Log("NONE");
             yield return null;
         }
-
+        
         m_FeetTrackingOn = m_XRLF.localPosition != Vector3.zero && m_XRRF.localPosition != Vector3.zero;
 
         m_CalibrationController.leftFootTracker = m_FeetTrackingOn ? m_XRLF.GetChild(0) : null;

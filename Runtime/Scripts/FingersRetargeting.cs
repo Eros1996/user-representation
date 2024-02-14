@@ -6,19 +6,24 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs;
 public class FingersRetargeting : MonoBehaviour
 {
     public bool isRightHand;
+    public bool customRotation;
+    
     public Vector3 proximalRotationOffset = new Vector3(90, 90, 90);
     public Vector3 intermediateRotationOffset = new Vector3(90, 90, 90);
     public Vector3 distalRotationOffset = new Vector3(90, 90, 90);
-    public Vector3 thumbRotationOffsetR = new Vector3(180, 90, 90);
-    public Vector3 thumbRotationOffsetL = new Vector3(0, 90, 90);
-    public List<JointToHumanBodyBonesReference> jointToHumanBodyBones;
 
+    public Vector3 metacarpalThumbRotationOffset; 
+    public Vector3 proximalThumbRotationOffset; 
+    public Vector3 distalThumbRotationOffset; 
+    
+    public List<JointToHumanBodyBonesReference> jointToHumanBodyBones;
+    
+    private Vector3 thumbRotationOffsetR = new Vector3(180, 90, 90);
+    private Vector3 thumbRotationOffsetL = new Vector3(0, 90, 90);
     private List<Transform> m_Fingers;
     private XRHandSubsystem m_HandSubsystem;
     private Animator m_Animator;
-    private HumanPoseHandler poseHandler;
     private bool m_IsHandTrackingStarted;
-    private GameObject worlds, locals, cubeWorld, cubeLocal;
     private GameObject m_XRRig;
     private XRInputModalityManager m_InputModalityManager;
     private XRHandSkeletonDriver m_XRHandSkeletonDriver;
@@ -35,6 +40,7 @@ public class FingersRetargeting : MonoBehaviour
     
     private void Start()
     {
+        Debug.Log("Start - " + isRightHand);
         m_XRRig = GameObject.Find("XR Origin (XR Rig)");
         m_InputModalityManager = m_XRRig.GetComponent<XRInputModalityManager>();
         m_XRHandSkeletonDriver = isRightHand ? m_InputModalityManager.rightHand.GetComponentInChildren<XRHandSkeletonDriver>() : m_InputModalityManager.leftHand.GetComponentInChildren<XRHandSkeletonDriver>();
@@ -46,11 +52,14 @@ public class FingersRetargeting : MonoBehaviour
     
     private void OnEnable()
     {
-        if (m_HandSubsystem is null) return;
+        Debug.Log("OnEnable - " + isRightHand);
+        if (m_HandSubsystem is null)
+            LoadSubsystem();
+        else
+            m_HandSubsystem.updatedHands += OnUpdatedHands;
         
         this.transform.localScale = Vector3.one;
         m_IsScaleFix = false;
-        m_HandSubsystem.updatedHands += OnUpdatedHands;
     }
 
     private void OnDisable()
@@ -92,6 +101,7 @@ public class FingersRetargeting : MonoBehaviour
             m_HandSubsystem = handSubsystem;
             break;
         }
+        Debug.Log("LoadSubsystem - " + isRightHand);
 
         if (m_HandSubsystem == null) return;
         m_XrHand = isRightHand ? m_HandSubsystem.rightHand : m_HandSubsystem.leftHand;
@@ -182,6 +192,8 @@ public class FingersRetargeting : MonoBehaviour
             SetHandScale(hand);
             m_IsScaleFix = true;
         }
+        
+        Debug.Log("UpdateSkeletonFingers - " + isRightHand);
 
         for (var i = XRHandJointID.ThumbMetacarpal.ToIndex(); i < XRHandJointID.EndMarker.ToIndex(); i++)
         {
@@ -209,8 +221,14 @@ public class FingersRetargeting : MonoBehaviour
                         case XRHandJointID.IndexDistal or XRHandJointID.LittleDistal or XRHandJointID.MiddleDistal or XRHandJointID.RingDistal:
                             avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(distalRotationOffset);
                             break;
-                        case XRHandJointID.ThumbProximal or XRHandJointID.ThumbDistal or XRHandJointID.ThumbMetacarpal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(m_ThumbRotationOffset);
+                        case XRHandJointID.ThumbMetacarpal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? metacarpalThumbRotationOffset : m_ThumbRotationOffset);
+                            break;
+                        case XRHandJointID.ThumbProximal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ?  proximalThumbRotationOffset : m_ThumbRotationOffset);
+                            break;
+                        case XRHandJointID.ThumbDistal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? distalThumbRotationOffset : m_ThumbRotationOffset);
                             break;
                         default:
                             avtFingerTransform.rotation = xrSkeletonJointTransform.rotation;
