@@ -9,6 +9,7 @@ using UnityEngine;
 public class RecordAnimation : MonoBehaviour
 {
 	public AnimationClip clip;
+	public bool AutoStart;
 	public BonesToRecord bonesToRecord;
 	
     private Animator m_Animator;
@@ -32,6 +33,7 @@ public class RecordAnimation : MonoBehaviour
 	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
 		    BonesToRecord.refBones[i] = true;
+		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
 	    
 	    bonesToRecord.SyncField();
@@ -43,6 +45,7 @@ public class RecordAnimation : MonoBehaviour
 	    for (var i = 0; i < BonesToRecord.refBones.Length; i++)
 	    {
 		    BonesToRecord.refBones[i] = false;
+		    Debug.Log(BonesToRecord.refBones[i]);
 	    }
 	    
 	    bonesToRecord.SyncField();
@@ -60,6 +63,12 @@ public class RecordAnimation : MonoBehaviour
 	
 	private void LateUpdate()
 	{
+		if (AutoStart)
+		{
+			AutoStart = false;
+			StartRecordingAnim();
+		}
+		
 		if (Input.GetKeyDown(KeyCode.A))
 			if(!m_RecordingAnim) 
 				StartRecordingAnim();
@@ -103,15 +112,31 @@ public class RecordAnimation : MonoBehaviour
 	    bonesToRecord.SyncList();
 	    m_Vrik = GetComponent<VRIK>();
 	    m_RecordingAnim = true;
-	    m_Vrik.solver.OnPostUpdate += BuildDictOfMuscle;
+
+	    if (m_Vrik)
+		    m_Vrik.solver.OnPostUpdate += BuildDictOfMuscle;
+	    else
+		    StartCoroutine(RecordNPCMuscleDic());
+    }
+
+    private IEnumerator RecordNPCMuscleDic()
+    {
+	    while (true)
+	    {
+		    BuildDictOfMuscle();
+		    yield return new WaitForSeconds(1/60f);
+	    }
     }
     
     public void StopRecordingAnim()
     {
 	    if(!m_RecordingAnim) return;
 	    
-	    m_Vrik.solver.OnPostUpdate -= BuildDictOfMuscle;
-
+	    if(m_Vrik)
+			m_Vrik.solver.OnPostUpdate -= BuildDictOfMuscle;
+	    else
+			StopCoroutine(RecordNPCMuscleDic());
+	    
 	    m_RecordingAnim = false;
 	    clip.ClearCurves();
 	    
