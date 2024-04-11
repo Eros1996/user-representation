@@ -40,7 +40,6 @@ public class FingersRetargeting : MonoBehaviour
     
     private void Start()
     {
-        Debug.Log("Start - " + isRightHand);
         m_XRRig = GameObject.Find("XR Origin (XR Rig)");
         m_InputModalityManager = m_XRRig.GetComponent<XRInputModalityManager>();
         m_XRHandSkeletonDriver = isRightHand ? m_InputModalityManager.rightHand.GetComponentInChildren<XRHandSkeletonDriver>() : m_InputModalityManager.leftHand.GetComponentInChildren<XRHandSkeletonDriver>();
@@ -52,7 +51,6 @@ public class FingersRetargeting : MonoBehaviour
     
     private void OnEnable()
     {
-        Debug.Log("OnEnable - " + isRightHand);
         if (m_HandSubsystem is null)
             LoadSubsystem();
         else
@@ -101,7 +99,6 @@ public class FingersRetargeting : MonoBehaviour
             m_HandSubsystem = handSubsystem;
             break;
         }
-        Debug.Log("LoadSubsystem - " + isRightHand);
 
         if (m_HandSubsystem == null) return;
         m_XrHand = isRightHand ? m_HandSubsystem.rightHand : m_HandSubsystem.leftHand;
@@ -193,8 +190,6 @@ public class FingersRetargeting : MonoBehaviour
             m_IsScaleFix = true;
         }
         
-        Debug.Log("UpdateSkeletonFingers - " + isRightHand);
-
         for (var i = XRHandJointID.ThumbMetacarpal.ToIndex(); i < XRHandJointID.EndMarker.ToIndex(); i++)
         {
             var fingerHumanBodyBones = jointToHumanBodyBones[i].humanBodyBoneTransform;
