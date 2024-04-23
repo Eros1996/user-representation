@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using RootMotion.FinalIK;
 using UnityEngine;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
@@ -32,7 +34,8 @@ public class FingersRetargeting : MonoBehaviour
     private Vector3 m_ThumbRotationOffset;
     private XRHand m_XrHand;
     private List<JointToTransformReference> m_JointTransformReferences;
-
+    private VRIK vrik;
+    
     public void IsScaleFix(bool isScaleFix)
     {
         m_IsScaleFix = isScaleFix;
@@ -45,7 +48,6 @@ public class FingersRetargeting : MonoBehaviour
         m_XRHandSkeletonDriver = isRightHand ? m_InputModalityManager.rightHand.GetComponentInChildren<XRHandSkeletonDriver>() : m_InputModalityManager.leftHand.GetComponentInChildren<XRHandSkeletonDriver>();
         m_JointTransformReferences = m_XRHandSkeletonDriver.jointTransformReferences;
         m_Animator = GetComponentInParent<Animator>();
-        
         LoadSubsystem();
     }
     
@@ -54,7 +56,8 @@ public class FingersRetargeting : MonoBehaviour
         if (m_HandSubsystem is null)
             LoadSubsystem();
         else
-            m_HandSubsystem.updatedHands += OnUpdatedHands;
+            vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
+            //m_HandSubsystem.updatedHands += OnUpdatedHands;
         
         this.transform.localScale = Vector3.one;
         m_IsScaleFix = false;
@@ -65,7 +68,8 @@ public class FingersRetargeting : MonoBehaviour
         if (m_HandSubsystem is null) return;
         
         this.transform.localScale = Vector3.one;
-        m_HandSubsystem.updatedHands -= OnUpdatedHands;
+        vrik.solver.OnPostUpdate -= UpdateSkeletonFingers;
+        //m_HandSubsystem.updatedHands -= OnUpdatedHands;
     }
 
     private void SetHandScale(XRHand hand)
@@ -80,9 +84,9 @@ public class FingersRetargeting : MonoBehaviour
         if(!fingerMiddleData.TryGetPose(out var xrMiddleJointPose)) return; 
         var avtMiddleDistalTransform = isRightHand ? m_Animator.GetBoneTransform(HumanBodyBones.RightMiddleDistal) : m_Animator.GetBoneTransform(HumanBodyBones.LeftMiddleDistal);;
         if (avtMiddleDistalTransform is null) return;
-        
-        var avtScale = Vector3.Distance(avtWrist.position, avtMiddleDistalTransform.position);
-        var xrScale = Vector3.Distance(xrWristJointPose.position, xrMiddleJointPose.position);
+
+        var avtScale = Mathf.Abs(avtWrist.position.y - avtMiddleDistalTransform.position.y);//Vector3.Distance(avtWrist.position, avtMiddleDistalTransform.position);
+        var xrScale = Mathf.Abs(xrWristJointPose.position.y - xrMiddleJointPose.position.y);//Vector3.Distance(xrWristJointPose.position, xrMiddleJointPose.position);
         
         m_HandScale = xrScale / avtScale;
         this.transform.localScale = Vector3.one * m_HandScale;
@@ -92,7 +96,7 @@ public class FingersRetargeting : MonoBehaviour
     {
         var handSubsystems = new List<XRHandSubsystem>();
         SubsystemManager.GetSubsystems(handSubsystems);
-
+        
         foreach (var handSubsystem in handSubsystems)
         {
             if (!handSubsystem.running) continue;
@@ -101,11 +105,65 @@ public class FingersRetargeting : MonoBehaviour
         }
 
         if (m_HandSubsystem == null) return;
+        vrik = GetComponentInParent<VRIK>();    
         m_XrHand = isRightHand ? m_HandSubsystem.rightHand : m_HandSubsystem.leftHand;
         m_ThumbRotationOffset = isRightHand ? thumbRotationOffsetR : thumbRotationOffsetL;
-        m_HandSubsystem.updatedHands += OnUpdatedHands;
+        //m_HandSubsystem.updatedHands += OnUpdatedHands;
+        vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
     }
-    
+
+    private void UpdateSkeletonFingers()
+    {
+        if (!m_IsScaleFix)
+        {
+            SetHandScale(m_XrHand);
+            m_IsScaleFix = true;
+        }
+        
+        for (var i = XRHandJointID.ThumbMetacarpal.ToIndex(); i < XRHandJointID.EndMarker.ToIndex(); i++)
+        {
+            var fingerHumanBodyBones = jointToHumanBodyBones[i].humanBodyBoneTransform;
+            if (fingerHumanBodyBones == HumanBodyBones.LastBone)
+                continue;
+            var avtFingerTransform = m_Animator.GetBoneTransform(fingerHumanBodyBones);
+            var xrFinger = jointToHumanBodyBones[i].xrHandJointID;
+
+            foreach (var jointToTransform in m_JointTransformReferences)
+            {
+                if (jointToTransform.xrHandJointID == xrFinger)
+                {
+                    var xrSkeletonJointTransform = jointToTransform.jointTransform;
+                    //avtFingerTransform.position = xrSkeletonJointTransform.position;
+
+                    switch (xrFinger)
+                    {
+                        case XRHandJointID.IndexProximal or XRHandJointID.LittleProximal or XRHandJointID.MiddleProximal or XRHandJointID.RingProximal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(proximalRotationOffset);
+                            break;
+                        case XRHandJointID.IndexIntermediate or XRHandJointID.LittleIntermediate or XRHandJointID.MiddleIntermediate or XRHandJointID.RingIntermediate:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(intermediateRotationOffset);
+                            break;
+                        case XRHandJointID.IndexDistal or XRHandJointID.LittleDistal or XRHandJointID.MiddleDistal or XRHandJointID.RingDistal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(distalRotationOffset);
+                            break;
+                        case XRHandJointID.ThumbMetacarpal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? metacarpalThumbRotationOffset : m_ThumbRotationOffset);
+                            break;
+                        case XRHandJointID.ThumbProximal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ?  proximalThumbRotationOffset : m_ThumbRotationOffset);
+                            break;
+                        case XRHandJointID.ThumbDistal:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? distalThumbRotationOffset : m_ThumbRotationOffset);
+                            break;
+                        default:
+                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation;
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
     [ContextMenu("Setup Joints To HumanBodyBones")]
     public void SetupJointsToHumanBodyBones()
     {
@@ -168,69 +226,17 @@ public class FingersRetargeting : MonoBehaviour
         }
     }
     
-    void OnUpdatedHands(XRHandSubsystem subsystem,XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags,XRHandSubsystem.UpdateType updateType)
-    {
-        switch (updateType)
-        {
-            case XRHandSubsystem.UpdateType.Dynamic:
-                // Update game logic that uses hand data
-                break;
-            case XRHandSubsystem.UpdateType.BeforeRender:
-                // Update visual objects that use hand data
-                UpdateSkeletonFingers(m_XrHand);
-                break;
-        }
-    }
-    
-    void UpdateSkeletonFingers(XRHand hand)
-    {
-        if (!m_IsScaleFix)
-        {
-            SetHandScale(hand);
-            m_IsScaleFix = true;
-        }
-        
-        for (var i = XRHandJointID.ThumbMetacarpal.ToIndex(); i < XRHandJointID.EndMarker.ToIndex(); i++)
-        {
-            var fingerHumanBodyBones = jointToHumanBodyBones[i].humanBodyBoneTransform;
-            if (fingerHumanBodyBones == HumanBodyBones.LastBone)
-                continue;
-            var avtFingerTransform = m_Animator.GetBoneTransform(fingerHumanBodyBones);
-            var xrFinger = jointToHumanBodyBones[i].xrHandJointID;
-
-            foreach (var jointToTransform in m_JointTransformReferences)
-            {
-                if (jointToTransform.xrHandJointID == xrFinger)
-                {
-                    var xrSkeletonJointTransform = jointToTransform.jointTransform;
-                    //avtFingerTransform.position = xrSkeletonJointTransform.position;
-
-                    switch (xrFinger)
-                    {
-                        case XRHandJointID.IndexProximal or XRHandJointID.LittleProximal or XRHandJointID.MiddleProximal or XRHandJointID.RingProximal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(proximalRotationOffset);
-                            break;
-                        case XRHandJointID.IndexIntermediate or XRHandJointID.LittleIntermediate or XRHandJointID.MiddleIntermediate or XRHandJointID.RingIntermediate:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(intermediateRotationOffset);
-                            break;
-                        case XRHandJointID.IndexDistal or XRHandJointID.LittleDistal or XRHandJointID.MiddleDistal or XRHandJointID.RingDistal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(distalRotationOffset);
-                            break;
-                        case XRHandJointID.ThumbMetacarpal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? metacarpalThumbRotationOffset : m_ThumbRotationOffset);
-                            break;
-                        case XRHandJointID.ThumbProximal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ?  proximalThumbRotationOffset : m_ThumbRotationOffset);
-                            break;
-                        case XRHandJointID.ThumbDistal:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation * Quaternion.Euler(customRotation ? distalThumbRotationOffset : m_ThumbRotationOffset);
-                            break;
-                        default:
-                            avtFingerTransform.rotation = xrSkeletonJointTransform.rotation;
-                            break;
-                    }
-                }
-            }
-        }   
-    }
+    // void OnUpdatedHands(XRHandSubsystem subsystem,XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags,XRHandSubsystem.UpdateType updateType)
+    // {
+    //     switch (updateType)
+    //     {
+    //         case XRHandSubsystem.UpdateType.Dynamic:
+    //             // Update game logic that uses hand data
+    //             break;
+    //         case XRHandSubsystem.UpdateType.BeforeRender:
+    //             // Update visual objects that use hand data
+    //             UpdateSkeletonFingers();
+    //             break;
+    //     }
+    // }
 }
