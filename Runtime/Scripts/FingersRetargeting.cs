@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using RootMotion.FinalIK;
 using UnityEngine;
@@ -48,25 +49,27 @@ public class FingersRetargeting : MonoBehaviour
         m_XRHandSkeletonDriver = isRightHand ? m_InputModalityManager.rightHand.GetComponentInChildren<XRHandSkeletonDriver>() : m_InputModalityManager.leftHand.GetComponentInChildren<XRHandSkeletonDriver>();
         m_JointTransformReferences = m_XRHandSkeletonDriver.jointTransformReferences;
         m_Animator = GetComponentInParent<Animator>();
-        LoadSubsystem();
+        
+        //StartCoroutine(WaitVRIKInit());
     }
     
     private void OnEnable()
     {
-        if (m_HandSubsystem is null)
-            LoadSubsystem();
-        else
-            vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
-            //m_HandSubsystem.updatedHands += OnUpdatedHands;
+        // if (m_HandSubsystem is null)
+        //     LoadSubsystem();
+        // else
+        //     vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
+        //     //m_HandSubsystem.updatedHands += OnUpdatedHands;
         
+        StartCoroutine(WaitVRIKInit());
         this.transform.localScale = Vector3.one;
         m_IsScaleFix = false;
     }
 
     private void OnDisable()
     {
-        if (m_HandSubsystem is null) return;
-        
+        if (vrik is null) return;
+            
         this.transform.localScale = Vector3.one;
         vrik.solver.OnPostUpdate -= UpdateSkeletonFingers;
         //m_HandSubsystem.updatedHands -= OnUpdatedHands;
@@ -105,11 +108,10 @@ public class FingersRetargeting : MonoBehaviour
         }
 
         if (m_HandSubsystem == null) return;
-        vrik = GetComponentInParent<VRIK>();    
         m_XrHand = isRightHand ? m_HandSubsystem.rightHand : m_HandSubsystem.leftHand;
         m_ThumbRotationOffset = isRightHand ? thumbRotationOffsetR : thumbRotationOffsetL;
         //m_HandSubsystem.updatedHands += OnUpdatedHands;
-        vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
+        //vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
     }
 
     private void UpdateSkeletonFingers()
@@ -224,6 +226,19 @@ public class FingersRetargeting : MonoBehaviour
             startIndx++;
             jointToHumanBodyBones[i] = joint2HumanBoneRef;
         }
+    }
+    
+    private IEnumerator WaitVRIKInit()
+    {
+        while (vrik == null)
+        {
+            yield return null;
+            vrik = this.GetComponentInParent<VRIK>();
+        }
+        
+        if (m_HandSubsystem is null) 
+            LoadSubsystem();
+        vrik.solver.OnPostUpdate += UpdateSkeletonFingers;
     }
     
     // void OnUpdatedHands(XRHandSubsystem subsystem,XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags,XRHandSubsystem.UpdateType updateType)
