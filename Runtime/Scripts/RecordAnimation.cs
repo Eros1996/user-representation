@@ -9,7 +9,7 @@ using UnityEngine;
 public class RecordAnimation : MonoBehaviour
 {
 	public AnimationClip clip;
-	//public bool AutoStart;
+	public bool AutoStart;
 	public BonesToRecord bonesToRecord;
 	
     private Animator m_Animator;
@@ -51,6 +51,8 @@ public class RecordAnimation : MonoBehaviour
 	    bonesToRecord.SyncField();
     }
     
+    
+
     // Start is called before the first frame update
 	void Start()
     {
@@ -61,11 +63,11 @@ public class RecordAnimation : MonoBehaviour
 	
 	private void LateUpdate()
 	{
-		// if (AutoStart)
-		// {
-		// 	AutoStart = false;
-		// 	StartRecordingAnim();
-		// }
+		if (AutoStart)
+		{
+			AutoStart = false;
+			StartRecordingAnim();
+		}
 		
 		if (Input.GetKeyDown(KeyCode.A))
 			if(!m_RecordingAnim) 
