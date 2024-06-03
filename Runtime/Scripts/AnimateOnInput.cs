@@ -8,6 +8,11 @@ public class AnimateOnInput : MonoBehaviour
     private XRInputModalityManager m_InputModalityManager;
     private ActionBasedController m_LeftControllerAction, m_RightControllerAction;
     
+    private static readonly int VrikTriggerL = Animator.StringToHash("VRIK_TriggerL");
+    private static readonly int VrikGripL = Animator.StringToHash("VRIK_GripL");
+    private static readonly int VrikTriggerR = Animator.StringToHash("VRIK_TriggerR");
+    private static readonly int VrikGripR = Animator.StringToHash("VRIK_GripR");
+
     private void Start()
     {
         m_Animator = this.GetComponent<Animator>();
@@ -19,10 +24,10 @@ public class AnimateOnInput : MonoBehaviour
     
     private void LateUpdate()
     {
-        m_Animator.SetFloat(Animator.StringToHash("VRIK_TriggerL"), m_LeftControllerAction.activateActionValue.action.ReadValue<float>());
-        m_Animator.SetFloat(Animator.StringToHash("VRIK_GripL"), m_LeftControllerAction.selectActionValue.action.ReadValue<float>());
-        m_Animator.SetFloat(Animator.StringToHash("VRIK_TriggerR"), m_RightControllerAction.activateActionValue.action.ReadValue<float>());
-        m_Animator.SetFloat(Animator.StringToHash("VRIK_GripR"), m_RightControllerAction.selectActionValue.action.ReadValue<float>());
+        m_Animator.SetFloat(VrikTriggerL, m_LeftControllerAction.activateActionValue.action.ReadValue<float>());
+        m_Animator.SetFloat(VrikGripL, m_LeftControllerAction.selectActionValue.action.ReadValue<float>());
+        m_Animator.SetFloat(VrikTriggerR, m_RightControllerAction.activateActionValue.action.ReadValue<float>());
+        m_Animator.SetFloat(VrikGripR, m_RightControllerAction.selectActionValue.action.ReadValue<float>());
     }
 
     private void OnEnable()
