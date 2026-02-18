@@ -1,5 +1,6 @@
 {
-    "name": "ViveTrackerInput",
+    "version": 1,
+    "name": "Vive Tracker Input Actions",
     "maps": [
         {
             "name": "ViveTracker_LeftFoot",
