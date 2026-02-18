@@ -13337,7 +13337,7 @@ GameObject:
   - component: {fileID: 1679266367123121609}
   - component: {fileID: 4381017961220219316}
   m_Layer: 2
-  m_Name: XR Origin Hands (XR Rig)
+  m_Name: XR Origin (XR Rig)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
